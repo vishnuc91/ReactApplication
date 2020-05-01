@@ -8,6 +8,10 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { Line } from 'react-chartjs-2';
 
 
+import DatePicker from 'react-date-picker';
+
+
+
 class TableData extends React.Component {
 
   constructor(props) {
@@ -21,7 +25,6 @@ class TableData extends React.Component {
 
     return (
       <div className="App">
-        
         <div className="ag-theme-balham" style={{ height: '400px', width: '600px' }}>
           <AgGridReact
             columnDefs={this.props.columns}
@@ -41,9 +44,12 @@ class LineChart extends React.Component {
 
   constructor(props) {
     super(props);
-
+    this.onChange = this.onChange.bind(this);
+    this.handleClick = this.handleClick.bind(this);
     // this.state = {}
     this.state = {
+      startDate: new Date(),
+      endDate: new Date(),
       labels: ['1511161234', '1511161234', '1511161238', '1511161210', '1511161278', '1511161298'],
       datasets: [
         {
@@ -70,12 +76,45 @@ class LineChart extends React.Component {
     }
 
   }
+  // handleChange = date => {
+  //   this.setState({
+  //     startDate: date
+  //   });
+  // };
+
+  // onChange = date => this.setState({ date })
+
+  onChange(event) {
+    console.log("ddddddddddddd", event.target, this.startDate);
+    this.setState({
+      startDate: event
+    });
+  }
+
+  handleClick(event) {
+    console.log("1111111111111111111111s", event)
+    console.log(this.state);
+  }
+
 
   render() {
-
     return (
       <div>
-        <TableData columns={this.state.columnDefs} rows={this.state.rowData} />
+        <label>From Date:</label>
+        <DatePicker
+          onChange={this.onChange}
+          value={this.state.startDate}
+          name="startDate"
+        />
+        <label>To Date:</label>
+        <DatePicker
+          onChange={this.onChange}
+          value={this.state.endDate}
+          name="endDate"
+        />
+        <button onClick={this.handleClick}>Submit</button>
+
+        <TableData columns={this.state.columnDefs} rows={this.state.rowData} date={this.state.startDate} />
         <Line
           width={50}
           height={10}
