@@ -44,12 +44,16 @@ class LineChart extends React.Component {
 
   constructor(props) {
     super(props);
-    this.onChange = this.onChange.bind(this);
+    this.onChange1 = this.onChange1.bind(this);
+    this.onChange2 = this.onChange2.bind(this);
     this.handleClick = this.handleClick.bind(this);
     // this.state = {}
     this.state = {
       startDate: new Date(),
       endDate: new Date(),
+      mean:"0",
+      max:"0",
+      min:"0",
       labels: ['1511161234', '1511161234', '1511161238', '1511161210', '1511161278', '1511161298'],
       datasets: [
         {
@@ -76,23 +80,22 @@ class LineChart extends React.Component {
     }
 
   }
-  // handleChange = date => {
-  //   this.setState({
-  //     startDate: date
-  //   });
-  // };
 
-  // onChange = date => this.setState({ date })
-
-  onChange(event) {
-    console.log("ddddddddddddd", event.target, this.startDate);
+  onChange1(event) {
+    console.log("eeeeeeeeeeeeeeeee", event)
     this.setState({
       startDate: event
     });
   }
 
+  // Could be done with single function but event.target is not working
+  onChange2(event) {
+    this.setState({
+      endDate: event
+    });
+  }
+
   handleClick(event) {
-    console.log("1111111111111111111111s", event)
     console.log(this.state);
   }
 
@@ -100,37 +103,46 @@ class LineChart extends React.Component {
   render() {
     return (
       <div>
-        <label>From Date:</label>
-        <DatePicker
-          onChange={this.onChange}
-          value={this.state.startDate}
-          name="startDate"
-        />
-        <label>To Date:</label>
-        <DatePicker
-          onChange={this.onChange}
-          value={this.state.endDate}
-          name="endDate"
-        />
-        <button onClick={this.handleClick}>Submit</button>
+        <div className="datepicker">
+        <form>
+          <label>From Date:</label>
+          <DatePicker
+            name="startDate"
+            onChange={this.onChange1}
+            value={this.state.startDate}
+          />
+          <label>To Date:</label>
+          <DatePicker
+            name="endDate"
+            onChange={this.onChange2}
+            value={this.state.endDate}
 
+          />
+          <button onClick={this.handleClick} type="submit">Submit</button>
+        </form>
+        </div>
+        <label>Mean: {this.state.mean}</label><br />
+        <label>Max Temperature:{this.state.mean}</label><br />
+        <label>Min Temperature:{this.state.mean}</label><br />
         <TableData columns={this.state.columnDefs} rows={this.state.rowData} date={this.state.startDate} />
-        <Line
-          width={50}
-          height={10}
-          data={this.state}
-          options={{
-            title: {
-              display: true,
-              text: 'Temperature from IOT Device',
-              fontSize: 20
-            },
-            legend: {
-              display: true,
-              position: 'right'
-            }
-          }}
-        />
+        <div style={{ height: '900px', width: '900px' }}>
+          <Line
+            width={50}
+            height={10}
+            data={this.state}
+            options={{
+              title: {
+                display: true,
+                text: 'Temperature from IOT Device',
+                fontSize: 20
+              },
+              legend: {
+                display: true,
+                position: 'right'
+              }
+            }}
+          />
+        </div>
       </div>
     );
   }
