@@ -6,11 +6,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 
 import { Line } from 'react-chartjs-2';
-
-
 import DatePicker from 'react-date-picker';
-
-
 
 class TableData extends React.Component {
 
@@ -25,7 +21,7 @@ class TableData extends React.Component {
 
     return (
       <div className="App">
-        <div className="ag-theme-balham" style={{ height: '400px', width: '600px' }}>
+        <div className="ag-theme-balham" style={{ height: '400px', width: '803px' }}>
           <AgGridReact
             columnDefs={this.props.columns}
             rowData={this.props.rows}>
@@ -54,7 +50,7 @@ class LineChart extends React.Component {
       mean:"0",
       max:"0",
       min:"0",
-      labels: ['1511161234', '1511161234', '1511161238', '1511161210', '1511161278', '1511161298'],
+      labels: [],
       datasets: [
         {
           label: 'Temperature',
@@ -63,26 +59,45 @@ class LineChart extends React.Component {
           backgroundColor: 'rgba(75,192,192,1)',
           borderColor: 'rgba(0,0,0,1)',
           borderWidth: 2,
-          data: [26.5, 23.5, 22.4, 21.0, 28.0, 32.0]
+          data: []
         }
       ],
       columnDefs: [
-        { headerName: "Temperature", field: "reading" },
-        { headerName: "Time", field: "timestamp" },
-        { headerName: "SensorType", field: "sensorType" }],
-      rowData: [{ reading: 26.0, timestamp: 1511161234, sensorType: "Temperature" },
-      { reading: 26.5, timestamp: 1511161234, sensorType: "Temperature" },
-      { reading: 23.5, timestamp: 1511161236, sensorType: "Temperature" },
-      { reading: 22.4, timestamp: 1511161238, sensorType: "Temperature" },
-      { reading: 21.0, timestamp: 1511161210, sensorType: "Temperature" },
-      { reading: 28.0, timestamp: 1511161278, sensorType: "Temperature" },
-      { reading: 32.0, timestamp: 1511161298, sensorType: "Temperature" }]
+        { headerName: "Time", field: "time" },
+        { headerName: "Date", field: "date" },
+        { headerName: "Temperature", field: "temperature" },
+        { headerName: "SensorType", field: "sensortype" }],
+      rowData: [],
+      isLoaded: false
     }
 
   }
 
+  componentDidMount() {
+    fetch("http://localhost:5000/home")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          for (const [index, item] of result.data.entries()) {
+            this.state.labels.push(item['date']);
+            this.state.datasets[0].data.push(item['temperature'])
+            
+          }
+          this.setState({
+            isLoaded: true,
+            rowData: result.data
+          });
+        },
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      )
+  }
+
   onChange1(event) {
-    console.log("eeeeeeeeeeeeeeeee", event)
     this.setState({
       startDate: event
     });
@@ -125,10 +140,10 @@ class LineChart extends React.Component {
         <label>Max Temperature:{this.state.mean}</label><br />
         <label>Min Temperature:{this.state.mean}</label><br />
         <TableData columns={this.state.columnDefs} rows={this.state.rowData} date={this.state.startDate} />
-        <div style={{ height: '900px', width: '900px' }}>
+        <div style={{ height: '300px', width: '1010px' }}>
           <Line
             width={50}
-            height={10}
+            height={20}
             data={this.state}
             options={{
               title: {
