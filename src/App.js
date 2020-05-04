@@ -145,7 +145,10 @@ class LineChart extends React.Component {
               }
               this.setState({
                 isLoaded: true,
-                rowData: result.data
+                rowData: result.data,
+                mean: result.aggregates.avg,
+                max: result.aggregates.max,
+                min: result.aggregates.min,
               });
             }
             else {
