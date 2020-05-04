@@ -1,8 +1,11 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Project Description
+
+React Application which is used for data from IOT Application.D Date will be represented in table and graphs and can be viewed by specific dates 
 
 ## Available Scripts
 
-In the project directory, you can run:
+In the project directory, you can run: `npm install` this will install all required packages.
 
 ### `npm start`
 
