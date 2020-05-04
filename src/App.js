@@ -88,7 +88,10 @@ class LineChart extends React.Component {
           }
           this.setState({
             isLoaded: true,
-            rowData: result.data
+            rowData: result.data,
+            mean: result.aggregates.avg,
+            max: result.aggregates.max,
+            min: result.aggregates.min,
           });
         },
         (error) => {
@@ -187,8 +190,8 @@ class LineChart extends React.Component {
           <button onClick={this.handleEvent}>Submit</button>
         </div>
         <label>Mean: {this.state.mean}</label><br />
-        <label>Max Temperature:{this.state.mean}</label><br />
-        <label>Min Temperature:{this.state.mean}</label><br />
+        <label>Max Temperature:{this.state.max}</label><br />
+        <label>Min Temperature:{this.state.min}</label><br />
         <TableData columns={this.state.columnDefs} rows={this.state.rowData} date={this.state.startDate} />
         <div style={{ height: '300px', width: '1010px' }}>
           <Line
