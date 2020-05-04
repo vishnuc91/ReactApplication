@@ -42,14 +42,17 @@ class LineChart extends React.Component {
     super(props);
     this.onChange1 = this.onChange1.bind(this);
     this.onChange2 = this.onChange2.bind(this);
-    this.handleClick = this.handleClick.bind(this);
+    this.handleEvent = this.handleEvent.bind(this);
+    this.url = "";
     // this.state = {}
     this.state = {
-      startDate: new Date(),
-      endDate: new Date(),
-      mean:"0",
-      max:"0",
-      min:"0",
+      startDate: '',
+      endDate: '',
+      fromDate: '',
+      toDate: '',
+      mean: "0",
+      max: "0",
+      min: "0",
       labels: [],
       datasets: [
         {
@@ -81,7 +84,7 @@ class LineChart extends React.Component {
           for (const [index, item] of result.data.entries()) {
             this.state.labels.push(item['date']);
             this.state.datasets[0].data.push(item['temperature'])
-            
+
           }
           this.setState({
             isLoaded: true,
@@ -90,36 +93,84 @@ class LineChart extends React.Component {
         },
         (error) => {
           this.setState({
-            isLoaded: true,
+            isLoaded: false,
             error
           });
         }
       )
   }
 
+  convert(datetime) {
+    var date = new Date(datetime),
+      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+      day = ("0" + date.getDate()).slice(-2);
+    return [date.getFullYear(), mnth, day].join("-");
+  }
+
   onChange1(event) {
     this.setState({
-      startDate: event
+      startDate: event,
+      fromDate: this.convert(event)
     });
   }
 
   // Could be done with single function but event.target is not working
   onChange2(event) {
     this.setState({
-      endDate: event
+      endDate: event,
+      toDate: this.convert(event)
     });
   }
 
-  handleClick(event) {
-    console.log(this.state);
+  handleEvent(event) {
+    if (this.state.fromDate != "" && this.state.toDate != "") {
+      this.url = `http://localhost:5000/home?from=${this.state.fromDate}&to=${this.state.toDate}`
+
+      fetch(this.url)
+        .then(res => res.json())
+        .then(
+          (result) => {
+            console.log(result.data)
+            if (result.data != "No Data Available") {
+              this.state.labels = []
+              this.state.datasets[0].data = []
+              for (const [index, item] of result.data.entries()) {
+
+                this.state.labels.push(item['date']);
+                this.state.datasets[0].data.push(item['temperature'])
+
+              }
+              this.setState({
+                isLoaded: true,
+                rowData: result.data
+              });
+            }
+            else {
+              this.setState({
+                isLoaded: false
+              });
+              console.log("No Data Available in database")
+            }
+          },
+          (error) => {
+            this.setState({
+              isLoaded: false,
+              error
+            });
+          }
+        )
+    }
+    else {
+      console.log("Please Select Dates")
+    }
   }
 
 
   render() {
+    const isLoaded = this.state.isLoaded;
     return (
       <div>
         <div className="datepicker">
-        <form>
           <label>From Date:</label>
           <DatePicker
             name="startDate"
@@ -131,10 +182,9 @@ class LineChart extends React.Component {
             name="endDate"
             onChange={this.onChange2}
             value={this.state.endDate}
-
+            required
           />
-          <button onClick={this.handleClick} type="submit">Submit</button>
-        </form>
+          <button onClick={this.handleEvent}>Submit</button>
         </div>
         <label>Mean: {this.state.mean}</label><br />
         <label>Max Temperature:{this.state.mean}</label><br />
@@ -158,6 +208,7 @@ class LineChart extends React.Component {
             }}
           />
         </div>
+        {/* <p isLoaded={false}>Data not Available</p> */}
       </div>
     );
   }
